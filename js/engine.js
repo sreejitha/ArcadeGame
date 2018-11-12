@@ -12,7 +12,7 @@
  * This engine makes the canvas' context (ctx) object globally available to make
  * writing app.js a little simpler to work with.
  */
-
+let animationId;
 var Engine = (function(global) {
   /* Predefine the variables we'll be using within this scope,
    * create the canvas element, grab the 2D context for that canvas
@@ -32,6 +32,7 @@ var Engine = (function(global) {
    * and handles properly calling the update and render methods.
    */
   function main() {
+
     /* Get our time delta information which is required if your game
      * requires smooth animation. Because everyone's computer processes
      * instructions at different speeds we need a constant value that
@@ -55,7 +56,7 @@ var Engine = (function(global) {
     /* Use the browser's requestAnimationFrame function to call this
      * function again as soon as the browser is able to draw another frame.
      */
-    win.requestAnimationFrame(main);
+    animationId = win.requestAnimationFrame(main);
   }
 
   /* This function does some initial setup that should only occur once,
@@ -100,15 +101,13 @@ var Engine = (function(global) {
    */
   function checkGameOver() {
 
-    if (player.y == 0)
-    {
-        console.log('y=0');
-        document.getElementsByClassName('modal')[0].style.display = 'table';
+    if (player.y == 0) {
+      document.getElementsByClassName('modal')[0].style.display = 'table';
+      gameOver = 1;
     }
   }
 
   function constructHiddenGameOverModal() {
-    console.log('calling gameover');
     let gameStats = document.createElement('div');
     gameStats.className = 'gameStats';
     let modalTextpara = document.createElement('p');
@@ -122,10 +121,11 @@ var Engine = (function(global) {
     gameStats.appendChild(modalTextpara);
     gameStats.appendChild(playAgainButton);
 
-    playAgainButton.addEventListener('click', function(){
-        document.getElementsByClassName('modal')[0].style.display = 'none';
-        main();
-    })
+    playAgainButton.addEventListener('click', function() {
+      gameOver = 0;
+      document.getElementsByClassName('modal')[0].style.display = 'none';
+      player.resetPosition();
+    });
   }
 
   /* This is called by the update function and loops through all of the

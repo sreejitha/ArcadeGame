@@ -3,61 +3,62 @@ let gameOverModal = document.createElement('div');
 gameOverModal.className = 'modal';
 document.body.appendChild(gameOverModal);
 
-// Enemies our player must avoid
-let Enemy = function(xCord, yCord, speed) {
-  // Variables applied to each of our instances go here,
-  // we've provided one for you to get started
+class Actor {
+  constructor(xCord, yCord, speed = null) {
+    this.x = xCord;
+    this.y = xCord;
+    this.height = 65;
+    this.width = 65;
+    this.speed = speed;
+  }
 
-  // The image/sprite for our enemies, this uses
-  // a helper we've provided to easily load images
-  this.sprite = 'images/enemy-bug.png';
-  this.x = xCord;
-  this.y = xCord;
-  this.height = 65;
-  this.width = 65;
-  this.speed = speed;
-};
+  render() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-  // You should multiply any movement by the dt parameter
-  // which will ensure the game runs at the same speed for
-  // all computers.
-  if ((this.x + this.speed * dt) > 505)
-    this.x = 0;
-  else
-    this.x = this.x + this.speed * dt;
-  this.render();
-};
+class Enemy extends Actor {
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+  constructor(xCord, yCord, speed) {
+    super(xCord, yCord, speed);
+    this.sprite = 'images/enemy-bug.png';
+  }
+
+  update(dt) {
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+    if ((this.x + this.speed * dt) > 505)
+      this.x = 0;
+    else
+      this.x = this.x + this.speed * dt;
+    this.render();
+  }
+
+  render() {
+    super.render();
+  }
+}
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 let allEnemies = [new Enemy(0, 0, 40), new Enemy(0, 0, 50), new Enemy(300, 0, 60), new Enemy(100, 0, 100), new Enemy(100, 0, 70), new Enemy(200, 0, 25)];
-class Player {
-  constructor() {
+class Player extends Actor {
+
+  constructor(xCord, yCord) {
+    super(xCord, yCord);
     this.sprite = 'images/player.png';
-    this.x = 300;
-    this.y = 450;
-    this.height = 65;
-    this.width = 65;
   }
 
-// Put player back to starting position
-  resetPosition(){
+  resetPosition() {
     this.x = 300;
     this.y = 450;
   }
   render() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    super.render();
   }
 
   handleInput(code) {
-    console.log("key pressed:" + code);
     switch (code) {
       case 'up':
         if (this.y - 83 > 0)
@@ -96,7 +97,7 @@ class Player {
 
 // Place the player object in a variable called player
 
-let player = new Player();
+let player = new Player(300,450);
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
